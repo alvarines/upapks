@@ -2,7 +2,7 @@ name: Update F-Droid Repo
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Esto permite darle a un botón para actualizar a mano
+  workflow_dispatch:
 
 jobs:
   main:
@@ -16,13 +16,17 @@ jobs:
       - name: Install F-Droid Server
         run: sudo apt-get update && sudo apt-get install -y fdroidserver
 
-      - name: Update Repo
+      - name: Generate Repo Index and Keys
         run: |
-          fdroid update -c
-          # Este comando genera los índices necesarios automáticamente
+          # El comando 'init' crea la configuración básica y las llaves necesarias
+          fdroid init --distinguished-name "CN=Mi Repo, OU=Personal, O=F-Droid"
+          
+          # El comando 'update' con -c y --create-key genera el índice firmado
+          fdroid update -c --create-key
+        working-directory: .
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: fdroid/repo
+          folder: repo # F-Droid genera todo en la carpeta 'repo' de la raíz
           branch: gh-pages
