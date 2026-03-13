@@ -2,17 +2,26 @@ name: Update F-Droid Repo
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: # Esto permite darle a un botón para actualizar a mano
+
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: F-Droid Repo Action
-        uses: achituv/fdroid-repo-action@v1
         with:
-          repo_name: "Mi Tienda"
-      - name: Deploy
+          fetch-depth: 0
+
+      - name: Install F-Droid Server
+        run: sudo apt-get update && sudo apt-get install -y fdroidserver
+
+      - name: Update Repo
+        run: |
+          fdroid update -c
+          # Este comando genera los índices necesarios automáticamente
+
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: fdroid/repo
