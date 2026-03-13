@@ -16,17 +16,19 @@ jobs:
       - name: Install F-Droid Server
         run: sudo apt-get update && sudo apt-get install -y fdroidserver
 
-      - name: Generate Repo Index and Keys
+      - name: Generate Repo Index
         run: |
-          # El comando 'init' crea la configuración básica y las llaves necesarias
-          fdroid init --distinguished-name "CN=Mi Repo, OU=Personal, O=F-Droid"
+          # Si no hay configuración, la creamos una sola vez
+          if [ ! -f "config.yml" ]; then
+            fdroid init --distinguished-name "CN=Mi Repo Personal, OU=F-Droid"
+          fi
           
-          # El comando 'update' con -c y --create-key genera el índice firmado
-          fdroid update -c --create-key
+          # Actualizamos el índice usando la llave que se acaba de crear
+          fdroid update -c
         working-directory: .
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: repo # F-Droid genera todo en la carpeta 'repo' de la raíz
+          folder: repo
           branch: gh-pages
