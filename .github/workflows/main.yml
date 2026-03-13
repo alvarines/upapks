@@ -1,0 +1,19 @@
+name: Update F-Droid Repo
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: F-Droid Repo Action
+        uses: achituv/fdroid-repo-action@v1
+        with:
+          repo_name: "Mi Tienda"
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: fdroid/repo
+          branch: gh-pages
